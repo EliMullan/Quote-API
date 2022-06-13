@@ -16,7 +16,7 @@ const renderError = response => {
 <p>${response.statusText}</p>`;
 }
 
-const renderQuotes = (quotes = []) => {
+const renderQuotes = (quotes = []) => { 
   resetQuotes();
   if (quotes.length > 0) {
     quotes.forEach(quote => {
