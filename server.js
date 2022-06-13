@@ -8,31 +8,49 @@ const PORT = process.env.PORT || 4001;
 
 app.use(express.static('public'));
 
+
 //setup and mount the router
 const quotesRouter = express.Router();
 app.use('/api/quotes', quotesRouter);
+
 
 //get a random quote
 quotesRouter.get('/random', (req, res) => {
     let randomQuote = getRandomElement(quotes);
     res.send({
-        quote: randomQuote
+        quote: randomQuote 
     });
 });
 
 //get all quotes or filter by author
 quotesRouter.get('/', (req, res) => {
     let author = req.query.person;
-    console.log(author);
     if(!author) {
         res.send({quotes})
     } else {
-        const filteredQuotes = quotes.filter(quote => quote.person == author);
-        res.send(filteredQuotes);
+        let filteredQuotes = [];
+        quotes.forEach(quote => {if (quote.person == author) { filteredQuotes.push(quote)}});
+        res.send({
+            quotes: filteredQuotes  
+        });
+    }
+});
+
+//create post request to add a new quote 
+quotesRouter.post('/', (req, res) => {
+    if(req.query.quote || req.query.person) {
+        let newQuote = {
+            quote: req.query.quote,
+            person: req.query.person
+        }
+        quotes.push(newQuote);
+        res.send({
+            quote:newQuote
+        });
+    } else {
+        res.status(400).send(`You must give me a quote and a person`)
     }
 })
-
-
 
 app.listen(PORT, () => {
     console.log(`Server listening at port ${PORT}`);
